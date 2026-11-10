@@ -1,0 +1,45 @@
+[project]
+authors = [{ name = "m-jahn", email = "jahn@mpusp.mpg.de" }]
+name = "snaketriage"
+version = "0.1.0"
+description = "Issue triage pipeline for the Snakemake GitHub repository"
+readme = "README.md"
+license = "MIT"
+keywords = [
+  "snakemake",
+  "github",
+  "issue",
+  "triage",
+  "automation",
+  "classifier"
+]
+requires-python = ">=3.11"
+dependencies = [
+  "sentence-transformers>=3.0.1",
+  "numpy>=1.26.0",
+  "pandas>=2.2.0",
+  "pytest>=8.0.0",
+  "pygithub>=2.10.0,<3",
+]
+
+[project.scripts]
+snaketriage = "snaketriage.cli:main"
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[tool.pixi.pypi-dependencies]
+sentence-transformers = ">=3.0.1"
+pygithub = ">=2.10.0,<3"
+pandas = ">=3.1.1,<4"
+numpy = ">=2.5.4,<3"
+
+[tool.pixi.tasks]
+test_repo = { cmd = "python src/snaketriage/cli.py --owner MPUSP --repo intranet --limit 100" }
+
+[tool.pixi.dependencies]

@@ -21,7 +21,9 @@ class GitHubIssueClient:
         """Initialize the GitHub issue client."""
         token = token or os.getenv("GITHUB_TOKEN")
         if not token:
-            raise ValueError("GitHub token must be provided either via argument or GITHUB_TOKEN environment variable")
+            raise ValueError(
+                "GitHub token must be provided either via argument or GITHUB_TOKEN environment variable"
+            )
         gh_instance = gh_instance or Github(auth=Auth.Token(token))
         logger.info("authenticated to Github API")
         self.token = token or os.getenv("GITHUB_TOKEN")
@@ -33,7 +35,7 @@ class GitHubIssueClient:
         repo_name: str,
         state: str = "open",
         limit: int | None = None,
-    ) -> Iterator[dict[str, Any]]:
+    ) -> Iterator[dict[str, Any]] | None:
         """Yield open issues for a repository while respecting a soft item limit."""
 
         gh_org = self.gh_instance.get_organization(repo_owner)
@@ -92,6 +94,7 @@ class GitHubIssueClient:
                                 }
                                 for c in issue.get_comments()
                             ],
+                            "html_url": f"https://github.com/{repo_owner}/{repo_name}/issues/{issue.number}",
                             "created_at": issue.created_at.isoformat(),
                             "updated_at": issue.updated_at.isoformat(),
                             "closed_at": (

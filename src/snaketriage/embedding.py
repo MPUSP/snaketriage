@@ -3,8 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 import numpy as np
 import logging
+import json
 from sentence_transformers import SentenceTransformer
-from issue_text import read_issue_jsonl
+
+try:
+    from .issue_text import read_issue_jsonl
+except ImportError:
+    from issue_text import read_issue_jsonl
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -22,7 +27,7 @@ class IssueEmbedding:
         self.input_path = Path(input_path)
         self.output_embedding_path = Path(output_embedding_path)
         self.model_name = model_name
-        self.embed_issues()
+        self.embed()
 
     def build_issue_text(self, issue: dict) -> str:
         parts = [issue.get("title", ""), issue.get("body", "")]
@@ -46,9 +51,9 @@ class IssueEmbedding:
             model = SentenceTransformer(str(output_model_path))
         return model
 
-    def embed_issues(
+    def embed(
         self,
-    ) -> tuple[np.ndarray, list[dict]]:
+    ) -> int:
         issues = read_issue_jsonl(self.input_path)
         texts = [self.build_issue_text(issue) for issue in issues]
         # load model
@@ -57,5 +62,9 @@ class IssueEmbedding:
         embeddings = model.encode(texts, convert_to_numpy=True, show_progress_bar=False)
         self.output_embedding_path.parent.mkdir(parents=True, exist_ok=True)
         np.save(self.output_embedding_path, embeddings)
+        with open(
+            self.output_embedding_path.parent / "metadata.json", "w", encoding="utf-8"
+        ) as f:
+            json.dump(issues, f, ensure_ascii=False, indent=4)
 
-        return embeddings
+        return len(embeddings)

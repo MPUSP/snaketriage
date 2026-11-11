@@ -1,11 +1,22 @@
 #!/usr/bin/env python3
 
+# standard library imports
 from __future__ import annotations
 import argparse
+import json
 import logging
+import numpy as np
 from pathlib import Path
-from github_client import GitHubIssueClient
-from embedding import IssueEmbedding
+
+# local imports
+try:
+    from .github_client import GitHubIssueClient
+    from .embedding import IssueEmbedding
+    from .clustering import ClusterEmbeddings
+except ImportError:
+    from github_client import GitHubIssueClient
+    from embedding import IssueEmbedding
+    from clustering import ClusterEmbeddings
 
 
 def parse_args() -> argparse.Namespace:
@@ -52,7 +63,7 @@ def fetch_issues(args: argparse.Namespace) -> int:
     return written
 
 
-def embed_issues(args: argparse.Namespace) -> IssueEmbedding:
+def embed_issues(args: argparse.Namespace) -> int:
     input_path = Path(args.output) / "raw" / "issues.jsonl"
     output_embedding_path = Path(args.output) / "embeddings" / "issues.npy"
     embeddings = IssueEmbedding(
@@ -60,24 +71,48 @@ def embed_issues(args: argparse.Namespace) -> IssueEmbedding:
         output_embedding_path=output_embedding_path,
         model_name=args.model,
     )
-    return embeddings
+    return embeddings.embed()
+
+
+def cluster_issues(args: argparse.Namespace) -> None:
+    input_embedding = Path(args.output) / "embeddings" / "issues.npy"
+    input_issues = Path(args.output) / "embeddings" / "metadata.json"
+    embeddings = np.load(input_embedding)
+    with open(input_issues, "r", encoding="utf-8") as f:
+        issues = json.load(f)
+    clusterer = ClusterEmbeddings(embeddings, issues)
+    output_dir = Path(args.output) / "clusters"
+    clusterer.cluster_embeddings(
+        output_dir=output_dir, repo_owner=args.owner, repo_name=args.repo
+    )
+    return None
 
 
 def main() -> None:
+
     # logger setup
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s - %(message)s"
     )
     logger = logging.getLogger(__name__)
+
     # argument parser setup
     args = parse_args()
+
     # Step 1: Initialize GitHub client and fetch issues
     written = fetch_issues(args)
     logger.info(f"Saved {written} issues to {args.output}")
+
     # Step 2: Embed the fetched issues
     embedded = embed_issues(args)
     logger.info(
-        f"Saved embeddings to {Path(args.output) / 'embeddings' / 'issues.npy'}"
+        f"Saved {embedded} embeddings to {Path(args.output) / 'embeddings' / 'issues.npy'}"
+    )
+
+    # Step 3: Cluster embeddings by similarity
+    clustered = cluster_issues(args)
+    logger.info(
+        f"Saved interactive cluster map to {Path(args.output) / 'clusters' / 'issue_clusters.html'}"
     )
 
 

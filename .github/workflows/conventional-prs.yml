@@ -1,0 +1,16 @@
+name: Conventional PRs
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
+
+permissions:
+  pull-requests: read
+
+jobs:
+  conventional-prs:
+    uses: MPUSP/mpusp-github-actions/.github/workflows/conventional-prs.yml@main

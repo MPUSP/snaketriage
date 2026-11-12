@@ -21,16 +21,18 @@ Briefly, it consists of the following steps:
 ## Project layout
 
 - `src/snaketriage/cli.py` — Main entrypoint for `snaketriage`
-- `src/snaketriage/fetch_issues.py` — Fetches open issues from GitHub
+- `src/snaketriage/github_client.py` — Fetches open issues from GitHub
 - `src/snaketriage/embedding.py` — Creates text embeddings for downloaded issues
+- `src/snaketriage/clustering.py` — Clusters issue embeddings and generates visualizations
 - `data/raw/` — raw issue dumps
 - `data/models/` — downloaded sentence-transformer models
 - `data/embeddings/` — serialized embeddings and metadata
+- `data/clusters/` — generated output, including cluster figures and tables
 
 ## Setup
 
-This project is managed by pixi for dependencies and tasks.
-The tool can be run and tested using pixi tasks, it can be installed via PyPi, or in the most usual case, run via GitHub Actions which will render and deploy a static website.
+This project is managed by [pixi](https://pixi.prefix.dev/) for dependency management and tasks.
+The tool can be run and tested using pixi tasks, it can be installed via PyPi, or in the most usual case, run via GitHub Actions which will render and deploy a static website (planned, not yet implemented).
 
 ### GitHub
 
@@ -44,22 +46,21 @@ pixi install
 pixi shell
 
 # run dedicated tasks
-pixi run test_repo
+pixi run test_small_repo
 ```
 
 ### PyPi
 
 - TODO: Installation instructions for PyPi to be added once it is released
 
-## Fetch and embed issues
+## Unit tests
 
-This will query the GitHub Issues API and save open issues (excluding pull requests) as JSON lines.
+Test fetching and embedding issues using `pytest`:
 
 ```bash
-python src/snaketriage/cli.py \
-  --owner MPUSP \
-  --repo intranet \
-  --limit 100
+pixi run pytest_fetch
+pixi run pytest_embed
+pixi run pytest_cluster
 ```
 
 ## Environment

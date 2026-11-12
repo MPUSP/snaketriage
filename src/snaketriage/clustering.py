@@ -143,6 +143,7 @@ class ClusterEmbeddings:
                 min_dist=min_dist,
                 metric="cosine",
                 random_state=random_state,
+                compatibility_layout=True
             )
             try:
                 two_dimensional = reducer.fit_transform(embeddings)
@@ -215,15 +216,19 @@ class ClusterEmbeddings:
 
         # make a DataFrame from the issues and drop unnecessary columns
         df = pd.DataFrame(self.issues)
-        df.drop(columns=["text", "body", "id"], errors="ignore", inplace=True)
+        df.drop(columns=["text", "body", "id"], errors="ignore")
         df["cluster_id"] = self.labels
 
         # create a priority score between 0 and 1 based on number of comments, recent activity, etc.
-        df["age"] = pd.to_datetime(df["updated_at"], utc=True).apply(
-            lambda x: pd.Timestamp.now(tz="UTC") - x
-        )
-        df["age"] = df["age"] / df["age"].max()
-        df["priority"] = (df["comments"] / df["comments"].max() + df["age"]) / 2
+        df["age"] = pd.Timestamp.now(tz="UTC") - pd.to_datetime(df["updated_at"], utc=True)
+        age_max = df["age"].max()
+        if age_max == pd.Timedelta(0):
+            age_max = pd.Timedelta(1)
+        df["age"] = 1 - (df["age"] / age_max)
+        comments_max = df["comments"].max()
+        if not comments_max or pd.isna(comments_max):
+            comments_max = 1
+        df["priority"] = (df["comments"] / comments_max + df["age"]) / 2
 
         # change order of columns and sort by cluster and priority
         df = df[

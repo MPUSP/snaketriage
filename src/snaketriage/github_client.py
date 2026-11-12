@@ -35,7 +35,7 @@ class GitHubIssueClient:
         repo_name: str,
         state: str = "open",
         limit: int | None = None,
-    ) -> Iterator[dict[str, Any]] | None:
+    ) -> list[dict[str, Any]]:
         """Yield open issues for a repository while respecting a soft item limit."""
 
         gh_org = self.gh_instance.get_organization(repo_owner)
@@ -47,7 +47,7 @@ class GitHubIssueClient:
             logger.warning(
                 f"Repository '{repo_name}' not found in organization {repo_owner}"
             )
-            return None
+            return []
 
         target_repo = gh_org.get_repo(repo_name)
         logger.info(f"Repository '{repo_name}' found in organization {repo_owner}")

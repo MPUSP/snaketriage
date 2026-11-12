@@ -74,7 +74,7 @@ def embed_issues(args: argparse.Namespace) -> int:
     return embeddings.embed()
 
 
-def cluster_issues(args: argparse.Namespace) -> None:
+def cluster_issues(args: argparse.Namespace) -> int:
     input_embedding = Path(args.output) / "embeddings" / "issues.npy"
     input_issues = Path(args.output) / "embeddings" / "metadata.json"
     embeddings = np.load(input_embedding)
@@ -85,7 +85,7 @@ def cluster_issues(args: argparse.Namespace) -> None:
     clusterer.cluster_embeddings(
         output_dir=output_dir, repo_owner=args.owner, repo_name=args.repo
     )
-    return None
+    return len(np.unique(clusterer.labels))
 
 
 def main() -> None:
@@ -110,9 +110,9 @@ def main() -> None:
     )
 
     # Step 3: Cluster embeddings by similarity
-    clustered = cluster_issues(args)
+    n_clusters = cluster_issues(args)
     logger.info(
-        f"Saved interactive cluster map to {Path(args.output) / 'clusters' / 'issue_clusters.html'}"
+        f"Saved {n_clusters} clusters to {Path(args.output) / 'clusters' / 'issue_clusters.html'}"
     )
 
 

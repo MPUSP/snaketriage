@@ -27,7 +27,6 @@ class IssueEmbedding:
         self.input_path = Path(input_path)
         self.output_embedding_path = Path(output_embedding_path)
         self.model_name = model_name
-        self.embed()
 
     def build_issue_text(self, issue: dict) -> str:
         parts = [issue.get("title", ""), issue.get("body", "")]

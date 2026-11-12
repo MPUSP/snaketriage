@@ -15,8 +15,13 @@ def normalize_issue_text(issue: dict[str, Any]) -> dict[str, Any]:
         if isinstance(label, dict)
     ]
     comments = issue.get("comments") or []
+    comment_text = "\n".join(
+        c.get("body", "")
+        for c in comments
+        if isinstance(c, dict) and c.get("body")
+    )
 
-    compact = [title, body, "\n".join([c.get("body", "") for c in comments])]
+    compact = [title, body, comment_text]
     text = "\n\n".join(part for part in compact if part)
 
     return {

@@ -1,0 +1,14 @@
+name: Release Please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  release-please:
+    uses: MPUSP/mpusp-github-actions/.github/workflows/release-please.yml@main

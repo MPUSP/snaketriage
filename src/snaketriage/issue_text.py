@@ -9,12 +9,19 @@ def normalize_issue_text(issue: dict[str, Any]) -> dict[str, Any]:
     """Return a compact text body and minimal metadata for similarity analysis."""
     title = (issue.get("title") or "").strip()
     body = (issue.get("body") or "").strip()
-    labels = [label.get("name", "") for label in issue.get("labels", []) if isinstance(label, dict)]
-
-    compact = [
-        title,
-        body,
+    labels = [
+        label.get("name", "")
+        for label in issue.get("labels", [])
+        if isinstance(label, dict)
     ]
+    comments = issue.get("comments") or []
+    comment_text = "\n".join(
+        c.get("body", "")
+        for c in comments
+        if isinstance(c, dict) and c.get("body")
+    )
+
+    compact = [title, body, comment_text]
     text = "\n\n".join(part for part in compact if part)
 
     return {
@@ -24,6 +31,7 @@ def normalize_issue_text(issue: dict[str, Any]) -> dict[str, Any]:
         "body": body,
         "labels": labels,
         "text": text,
+        "comments": len(issue.get("comments") or []),
         "url": issue.get("html_url"),
         "created_at": issue.get("created_at"),
         "updated_at": issue.get("updated_at"),

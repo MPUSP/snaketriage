@@ -44,8 +44,14 @@ numpy = ">=2.5.4,<3"
 scikit-learn = ">=1.9.1,<2"
 umap-learn = ">=0.5.7"
 plotly = ">=5.24.1"
+pytest = ">=8.0.0"
 
 [tool.pixi.tasks]
+# unit tests
+pytest_fetch = { cmd = "pytest tests/test_fetch.py" }
+pytest_embed = { cmd = "pytest tests/test_embedding.py" }
+pytest_cluster = { cmd = "pytest tests/test_clustering.py" }
+# full tests
 test_small_repo = { cmd = "python src/snaketriage/cli.py --owner snakemake --repo snakedeploy --limit 20" }
 test_large_repo = { cmd = "python src/snaketriage/cli.py --owner snakemake --repo snakemake --limit 100" }
 

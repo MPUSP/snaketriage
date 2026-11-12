@@ -147,7 +147,7 @@ class ClusterEmbeddings:
             )
             try:
                 two_dimensional = reducer.fit_transform(embeddings)
-            except:
+            except Exception:
                 logger.warning(
                     "UMAP processing failed, possibly due to low number of issues.\n"
                     + "Returning an empty figure instead."

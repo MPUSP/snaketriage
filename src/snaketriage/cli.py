@@ -1,22 +1,22 @@
-#!/usr/bin/env python3
-
 # standard library imports
 from __future__ import annotations
+
 import argparse
 import json
 import logging
-import numpy as np
 from pathlib import Path
+
+import numpy as np
 
 # local imports
 try:
-    from .github_client import GitHubIssueClient
-    from .embedding import IssueEmbedding
     from .clustering import ClusterEmbeddings
+    from .embedding import IssueEmbedding
+    from .github_client import GitHubIssueClient
 except ImportError:
-    from github_client import GitHubIssueClient
-    from embedding import IssueEmbedding
     from clustering import ClusterEmbeddings
+    from embedding import IssueEmbedding
+    from github_client import GitHubIssueClient
 
 
 def parse_args() -> argparse.Namespace:
@@ -47,6 +47,12 @@ def parse_args() -> argparse.Namespace:
         default="sentence-transformers/all-MiniLM-L6-v2",
         help="Sentence-transformer model name",
     )
+    parser.add_argument(
+        "--test",
+        type=bool,
+        default=False,
+        help="Run in test mode",
+    )
     return parser.parse_args()
 
 
@@ -64,7 +70,10 @@ def fetch_issues(args: argparse.Namespace) -> int:
 
 
 def embed_issues(args: argparse.Namespace) -> int:
-    input_path = Path(args.output) / "raw" / "issues.jsonl"
+    if args.test:
+        input_path = Path("tests") / "data" / "raw" / "issues.jsonl"
+    else:
+        input_path = Path(args.output) / "raw" / "issues.jsonl"
     output_embedding_path = Path(args.output) / "embeddings" / "issues.npy"
     embeddings = IssueEmbedding(
         input_path=input_path,
@@ -75,8 +84,12 @@ def embed_issues(args: argparse.Namespace) -> int:
 
 
 def cluster_issues(args: argparse.Namespace) -> int:
-    input_embedding = Path(args.output) / "embeddings" / "issues.npy"
-    input_issues = Path(args.output) / "embeddings" / "metadata.json"
+    if args.test:
+        input_embedding = Path("tests") / "data" / "embeddings" / "issues.npy"
+        input_issues = Path("tests") / "data" / "embeddings" / "metadata.json"
+    else:
+        input_embedding = Path(args.output) / "embeddings" / "issues.npy"
+        input_issues = Path(args.output) / "embeddings" / "metadata.json"
     embeddings = np.load(input_embedding)
     with open(input_issues, "r", encoding="utf-8") as f:
         issues = json.load(f)

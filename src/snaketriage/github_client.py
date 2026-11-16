@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 from pathlib import Path
-from typing import Any, Iterator
-import logging
-from github import Github
-from github import Auth
+from typing import Any
+
+from github import Auth, Github
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

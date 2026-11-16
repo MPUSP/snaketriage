@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from pathlib import Path
-import numpy as np
-import logging
 import json
+import logging
+from pathlib import Path
+
+import numpy as np
 from sentence_transformers import SentenceTransformer
 
 try:
@@ -34,15 +35,16 @@ class IssueEmbedding:
         return "\n\n".join(cleaned)
 
     def get_model(
-        self, model_name: str, output_embedding_path: Path
+        self, model_name: str, input_path: Path
     ) -> SentenceTransformer:
         if model_name is None or model_name.strip() == "":
             raise ValueError("Model name must be provided")
-        output_model_path = output_embedding_path.parent.parent / "models" / model_name
+        output_model_path = input_path.parent.parent / "models" / model_name
         if not output_model_path.exists():
             logger.info(
                 f"Downloading and saving model '{model_name}' to '{output_model_path}'"
             )
+            output_model_path.parent.mkdir(parents=True, exist_ok=True)
             model = SentenceTransformer(model_name)
             model.save(str(output_model_path))
         else:
@@ -56,7 +58,7 @@ class IssueEmbedding:
         issues = read_issue_jsonl(self.input_path)
         texts = [self.build_issue_text(issue) for issue in issues]
         # load model
-        model = self.get_model(self.model_name, self.output_embedding_path)
+        model = self.get_model(self.model_name, self.input_path)
         # embed the issue texts into vectors
         embeddings = model.encode(texts, convert_to_numpy=True, show_progress_bar=False)
         self.output_embedding_path.parent.mkdir(parents=True, exist_ok=True)

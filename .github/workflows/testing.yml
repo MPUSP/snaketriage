@@ -1,0 +1,26 @@
+name: Test
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: prefix-dev/setup-pixi@v0
+        with:
+          cache: true
+
+      - name: test-github-client
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pixi run pytest-github-client
+
+      - name: test-embedding
+        run: pixi run pytest-embed
+
+      - name: test-clustering
+        run: pixi run pytest-cluster

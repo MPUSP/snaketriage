@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/MPUSP/snaketriage/compare/v1.0.0...v1.1.0) (2026-11-16)
+
+
+### Features
+
+* added github action for testing ([0b6cad1](https://github.com/MPUSP/snaketriage/commit/0b6cad14bafa80551dd0ef3fbf781581150bab56))
+* added tests, updated README, formatting using ruff ([b9429b7](https://github.com/MPUSP/snaketriage/commit/b9429b729dd05d14d58c235bb2dfbdd368e33f6c))
+
+
+### Bug Fixes
+
+* test runs ([d77a342](https://github.com/MPUSP/snaketriage/commit/d77a342060fcec54f48ec66e35fa4f8386829e93))
+
 ## 1.0.0 (2026-11-12)
 
 

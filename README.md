@@ -46,7 +46,7 @@ pixi install
 pixi shell
 
 # run dedicated tasks
-pixi run test_small_repo
+pixi run test-small-repo
 ```
 
 ### PyPi
@@ -58,9 +58,9 @@ pixi run test_small_repo
 Test fetching and embedding issues using `pytest`:
 
 ```bash
-pixi run pytest_github_client
-pixi run pytest_embed
-pixi run pytest_cluster
+pixi run pytest-github-client
+pixi run pytest-embed
+pixi run pytest-cluster
 ```
 
 ## Formatting and linting

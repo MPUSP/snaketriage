@@ -58,9 +58,18 @@ pixi run test_small_repo
 Test fetching and embedding issues using `pytest`:
 
 ```bash
-pixi run pytest_fetch
+pixi run pytest_github_client
 pixi run pytest_embed
 pixi run pytest_cluster
+```
+
+## Formatting and linting
+
+Code formatting and linting is performed using Ruff:
+
+```bash
+pixi run ruff check .
+pixi run ruff format .
 ```
 
 ## Environment

@@ -11,7 +11,8 @@ keywords = [
   "issue",
   "triage",
   "automation",
-  "classifier"
+  "classifier",
+  "clustering"
 ]
 requires-python = ">=3.11"
 dependencies = [
@@ -23,6 +24,7 @@ dependencies = [
   "scikit-learn>=1.9.1,<2",
   "umap-learn>=0.5.7",
   "plotly>=5.24.1",
+  "ruff>=0.17.5,<0.18",
 ]
 
 [project.scripts]
@@ -36,23 +38,11 @@ requires = ["hatchling"]
 channels = ["conda-forge"]
 platforms = ["linux-64"]
 
-[tool.pixi.pypi-dependencies]
-sentence-transformers = ">=3.0.1"
-pygithub = ">=2.10.0,<3"
-pandas = ">=3.1.1,<4"
-numpy = ">=2.5.4,<3"
-scikit-learn = ">=1.9.1,<2"
-umap-learn = ">=0.5.7"
-plotly = ">=5.24.1"
-pytest = ">=8.0.0"
-
 [tool.pixi.tasks]
 # unit tests
-pytest_fetch = { cmd = "pytest tests/test_fetch.py" }
-pytest_embed = { cmd = "pytest tests/test_embedding.py" }
-pytest_cluster = { cmd = "pytest tests/test_clustering.py" }
+pytest-github-client = { cmd = "pytest tests/test_github_client.py" }
+pytest-embed = { cmd = "pytest tests/test_embedding.py" }
+pytest-cluster = { cmd = "pytest tests/test_clustering.py" }
 # full tests
-test_small_repo = { cmd = "python src/snaketriage/cli.py --owner snakemake --repo snakedeploy --limit 20" }
-test_large_repo = { cmd = "python src/snaketriage/cli.py --owner snakemake --repo snakemake --limit 100" }
-
-[tool.pixi.dependencies]
+test-small-repo = { cmd = "python src/snaketriage/cli.py --owner snakemake --repo snakedeploy --limit 20" }
+test-large-repo = { cmd = "python src/snaketriage/cli.py --owner snakemake --repo snakemake --limit 100" }

@@ -16,9 +16,7 @@ def normalize_issue_text(issue: dict[str, Any]) -> dict[str, Any]:
     ]
     comments = issue.get("comments") or []
     comment_text = "\n".join(
-        c.get("body", "")
-        for c in comments
-        if isinstance(c, dict) and c.get("body")
+        c.get("body", "") for c in comments if isinstance(c, dict) and c.get("body")
     )
 
     compact = [title, body, comment_text]

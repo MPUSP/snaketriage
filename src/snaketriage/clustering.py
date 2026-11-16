@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from pathlib import Path
 import logging
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-from sklearn import cluster, metrics
 import umap
+from sklearn import cluster, metrics
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -105,7 +105,7 @@ class ClusterEmbeddings:
         self.labels = kmeans.fit_predict(normalized)
         cluster_counts = np.bincount(self.labels)
         logger.info(
-            f"Assigned cluster labels:\n"
+            "Assigned cluster labels:\n"
             + f"CLUSTER:   {np.unique(self.labels)}\n"
             + f"FREQUENCY: {cluster_counts}"
         )
@@ -143,11 +143,11 @@ class ClusterEmbeddings:
                 min_dist=min_dist,
                 metric="cosine",
                 random_state=random_state,
-                compatibility_layout=True
+                compatibility_layout=True,
             )
             try:
                 two_dimensional = reducer.fit_transform(embeddings)
-            except Exception:
+            except OSError:
                 logger.warning(
                     "UMAP processing failed, possibly due to low number of issues.\n"
                     + "Returning an empty figure instead."
@@ -220,7 +220,9 @@ class ClusterEmbeddings:
         df["cluster_id"] = self.labels
 
         # create a priority score between 0 and 1 based on number of comments, recent activity, etc.
-        df["age"] = pd.Timestamp.now(tz="UTC") - pd.to_datetime(df["updated_at"], utc=True)
+        df["age"] = pd.Timestamp.now(tz="UTC") - pd.to_datetime(
+            df["updated_at"], utc=True
+        )
         age_max = df["age"].max()
         if age_max == pd.Timedelta(0):
             age_max = pd.Timedelta(1)
